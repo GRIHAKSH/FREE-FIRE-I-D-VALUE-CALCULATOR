@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FF ID Value Pro</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: linear-gradient(135deg,#0f172a,#020617);
+    color: white;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    background: black;
+}
+
+.navbar button {
+    margin-left: 10px;
+}
+
+/* Sections */
+.section {
+    display: none;
+    text-align: center;
+    margin-top: 50px;
+}
+
+.active {
+    display: block;
+}
+
+/* Inputs */
+input {
+    display: block;
+    margin: 10px auto;
+    padding: 10px;
+    width: 250px;
+    border-radius: 5px;
+    border: none;
+}
+
+/* Buttons */
+button {
+    padding: 10px 20px;
+    background: orange;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+button:hover {
+    background: red;
+    transform: scale(1.1);
+}
+
+/* Glow animation */
+.glow {
+    animation: glow 2s infinite alternate;
+}
+
+@keyframes glow {
+    from { text-shadow: 0 0 10px orange; }
+    to { text-shadow: 0 0 25px red; }
+}
+
+/* Fade animation */
+.fade {
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Leaderboard */
+ul {
+    list-style: none;
+    padding: 0;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <h2>🔥 FF ID Value</h2>
+    <div>
+        <button onclick="show('home')">Home</button>
+        <button onclick="show('login')">Login</button>
+        <button onclick="show('calc')">Calculator</button>
+        <button onclick="show('leader')">Leaderboard</button>
+    </div>
+</div>
+
+<!-- HOME -->
+<div id="home" class="section active fade">
+    <h1 class="glow">Free Fire MAX ID Value</h1>
+    <p>Check your account estimated value 🔥</p>
+    <button onclick="show('calc')">Start</button>
+</div>
+
+<!-- LOGIN -->
+<div id="login" class="section fade">
+    <h2>Login</h2>
+    <input id="username" placeholder="Username">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+</div>
+
+<!-- CALCULATOR -->
+<div id="calc" class="section fade">
+    <h2>ID Value Calculator</h2>
+
+    <input id="name" placeholder="Player Name">
+    <input id="uid" placeholder="UID">
+    <input id="level" type="number" placeholder="Level">
+    <input id="gun" type="number" placeholder="Gun Skins">
+    <input id="elite" type="number" placeholder="Elite Pass">
+    <input id="bundle" type="number" placeholder="Bundles">
+    <input id="emote" type="number" placeholder="Emotes">
+    <input id="diamond" type="number" placeholder="Diamonds Spent">
+
+    <button onclick="calculate()">Calculate</button>
+
+    <h3 id="result"></h3>
+</div>
+
+<!-- LEADERBOARD -->
+<div id="leader" class="section fade">
+    <h2>Top Players</h2>
+    <ul id="list"></ul>
+</div>
+
+<script>
+function show(section) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(section).classList.add('active');
+
+    if(section === "leader") loadLeaderboard();
+}
+
+function login() {
+    let user = document.getElementById("username").value;
+    let pass = document.getElementById("password").value;
+
+    if(user && pass){
+        localStorage.setItem("user", user);
+        alert("Login Successful");
+        show("calc");
+    } else {
+        alert("Enter details");
+    }
+}
+
+function calculate() {
+    let name = document.getElementById("name").value;
+    let uid = document.getElementById("uid").value;
+
+    let level = document.getElementById("level").value * 10;
+    let gun = document.getElementById("gun").value * 200;
+    let elite = document.getElementById("elite").value * 100;
+    let bundle = document.getElementById("bundle").value * 150;
+    let emote = document.getElementById("emote").value * 50;
+    let diamond = document.getElementById("diamond").value * 0.5;
+
+    let total = level + gun + elite + bundle + emote + diamond;
+
+    document.getElementById("result").innerHTML = "💰 Value: ₹ " + total;
+
+    let players = JSON.parse(localStorage.getItem("players")) || [];
+
+    players.push({
+        name: name,
+        uid: uid,
+        value: total
+    });
+
+    localStorage.setItem("players", JSON.stringify(players));
+}
+
+function loadLeaderboard() {
+    let data = JSON.parse(localStorage.getItem("players")) || [];
+    let list = document.getElementById("list");
+    list.innerHTML = "";
+
+    data.sort((a,b)=>b.value-a.value);
+
+    data.forEach(p=>{
+        let li = document.createElement("li");
+        li.innerHTML = `🔥 ${p.name} (UID: ${p.uid}) - ₹ ${p.value}`;
+        list.appendChild(li);
+    });
+}
+</script>
+
+</body>
+</html>
